@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    
+    <head>
+        <title>uexCamera(拍照功能)</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="./cssWeui/weui.css">
+        <link rel="stylesheet" href="./cssWeui/jquery-weui.css">
+        <style type="text/css">
+           input{padding: 0.5em;margin-top: 1em;margin-left: 30%;}
+        </style>
+    </head>
+    <body style="height: 100vh;background: #fff;">
+        <div id="header" class="uh bc-text-head ub bc-head">
+            <div class="nav-btn" id="nav-left">
+                <div class="fa fa-angle-left fa-2x"></div>
+            </div>
+            <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">uexCamera(拍照功能)</h1>
+            <div class="nav-btn" id="nav-right">
+            </div>
+        </div>
+            
+            
+            
+            <!-- 正文内容 -->
+   <div id="addanswerImg1"  style="margin-top:20px;margin-left:30%;line-height:30px; width: 150px;height: 30px;background:#311375;border-radius: 5px;font-size: 15px;color: #fff;text-align: center; ">
+        上传图片
+    </div>
+            
+      <div id="chatVideo1" style="margin-top:20px;margin-left:30%; width: 150px;height: 30px;line-height:30px; background:#311375;border-radius: 5px;font-size: 15px;color: #fff;text-align: center; ">
+                上传视频
+       </div>     
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+         <script src="js/upimg1.js"></script><!-- 图片 -->
+          <script src="js/fabu.js"></script><!-- 视频 -->  
+        <script>appcan.button(".nav-btn", "btn-act", function() {
+                    appcan.window.close(-1);
+                })
+        </script>
+    </body>
+
+</html>
