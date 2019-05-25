@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    
+    <head>
+        <title>版本更新</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="./cssWeui/weui.css">
+        <link rel="stylesheet" href="./cssWeui/jquery-weui.css">
+</head>
+<style type="text/css">
+  /*版本更新*/
+.weui-slider__track{height: 20px;}.weui-slider__handler{height: 0px; width: 0px;}
+.zhong{  position: fixed;z-index: 5000;width: 80%;
+  max-width: 300px;top: 45%;left: 50%;-webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);background-color: #FFFFFF;
+  text-align: center;border-radius: 3px;overflow: hidden;}
+  .weui-slider__track{background-color: #311375}
+</style>
+<body style="height: 100vh;background: #fff;">
+        <div id="header" class="uh bc-text-head ub bc-head">
+            <div class="nav-btn" id="nav-left">
+                <div class="fa fa-angle-left fa-2x"></div>
+            </div>
+            <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">版本更新(可原生)</h1>
+            <div class="nav-btn" id="nav-right">
+            </div>
+        </div>
+           
+      <!-- 版本更新 -->
+            <div id="gxnr" >
+                <!-- <div class="weui-mask weui-mask--visible"></div>
+                <div id="" class="zhong">
+                    <div id="" style="margin-top: 10px;">
+                        版本更新中...
+                    </div>
+                    <div class="weui-slider " id="slider1">
+                      <div class="weui-slider__inner" style="height: 20px;">
+                        <div style="width: 10%;" class="weui-slider__track" id="rate"></div>
+                        <div style="left: 0%;" class="weui-slider__handler"></div>
+                      </div>
+                    </div>
+                </div> -->
+            </div>   
+            
+           
+                <a class="weui-cell weui-cell_access" style="background: #f7f7f7">
+                    <div class="weui-cell__bd" onclick="edition()">
+                      <span>当前版本</span>
+                      <span id="nowEdition"></span>
+                      <span id="redBall" style="float: right;color:#EE5642;">
+                          
+                      </span>
+                    </div>
+                </a>
+           
+            
+            
+</body>
+
+
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script type="text/javascript" src="./jsWeui/jquery.min.js" ></script>
+    <script type="text/javascript" src="./jsWeui/jquery-weui.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    
+    var nowVersion;
+          //版本更新
+        appcan.ready(function () {
+            
+            editionAA();
+            
+        });
+       
+       
+       //检测版本
+       (function($) {
+            setTimeout(function() {
+                banben ()
+            },1000)
+        })($);
+        
+        
+         //获取版本号
+    function banben () {
+      var widgetInfo=uexWidgetOne.getCurrentWidgetInfo();
+      console.log(widgetInfo);
+      nowVersion = widgetInfo.version
+      $("#nowEdition").text(widgetInfo.version);
+      edition_new();
+    } 
+        
+/* 
+ 访问后台地址（android.json）内容
+    {
+    "version": "00.00.0003",-------------------> 此处为最新版本号！！！
+    "changeLog": "我是版本更新的内容<br>看看",------------->此处为更新时提示内容（支持HTML标签，如：<br>）
+    "changeLogEn": "fix bugs",----------->暂未使用，可不写
+    "changeLogAll": "修改bug/fix bugs",----------->暂未使用，可不写
+    "url": "http://172.19.35.51/upgrade/down/3.apk"--------------->此处为最新软件的路径！！！
+    }
+ */
+
+//该连接为  创客方舟 的后台访问
+
+function editionAA () {//------------------------------------------------版本更新
+  var Core=uexWidgetOne.getCurrentWidgetInfo();//获取当前版本信息
+   
+    // 登录页面每次初始化之前，先检查是否要更新
+    if (uexWidgetOne.platformName == "android") {//只有安卓才用此更新
+        $.ajax({
+            url: "http://172.19.35.51/apk/android.json",//访问后台地址,返回版本号 apk下载路径等信息(*********改**********)
+            type: "GET",
+            success: function(res) {
+       //------------------------------------版本对比------------------------------------------------------  
+                /*
+                 * 由于版本号是两个小数点不能直接比较，直接比较会出错（偶尔不对）。
+                 * 所以就把前两位 转为浮点数比较，在相等的情况下比较后面一位。
+                 */
+                    var ver1 = res.version;//请求地址的版本号
+                    var ver2 = Core.version;//当前版本号
+                    var version1pre = parseFloat(ver1);//请求地址的版本号，parseFloat() 函数可解析一个字符串，并返回一个浮点数。
+                    var version2pre = parseFloat(ver2);//当前版本号
+                    var version1next =  ver1.replace(version1pre + ".","");//请求地址的版本号
+                    var version2next =  ver2.replace(version2pre + ".","");//当前版本号，replace() 方法用于在字符串中用一些字符替换另一些字符，或替换一个与正则表达式匹配的子串
+                    
+                     var downloader = uexDownloaderMgr.create();//创建下载对象
+                     
+                    if(version1pre > version2pre){//-----请求地址的版本号  【大于】  当前版本号
+                            geng();
+                    }else if(version1pre < version2pre){ //-----请求地址的版本号  【小于】  当前版本号
+                        return false;
+                    }else{
+                        if(version1next > version2next){ //-----请求地址的版本号  【大于】  当前版本号
+                            geng();
+                        }else{//-----请求地址的版本号  【小于或等于】  当前版本号
+                            return false;
+                        }
+                    }
+       //-----------------------------------下载APK------------------------------------------------------      
+                    function geng () {
+                        $.confirm(res.changeLog, "版本更新", function() {//res.changeLog为提示信息
+                            //下载文件
+                               uexDownloaderMgr.download(downloader,//由create接口创建的下载对象
+                                 res.url, //    服务器地址
+                                 "wgt://data/down/up.apk",//    本地保存地址
+                                 1, //  是否支持断点续传,0:不支持,1:支持
+                               function(fileSize, percent, status){//   下载进度回调
+                                  switch (status) {//   status：下载状态 0-下载中 1-下载完成 2-下载发生错误
+                                      case 0:  
+                                           var xhtml ='<div class="weui-mask weui-mask--visible"></div>'+
+                                            '<div id="" class="zhong">'+
+                                                '<div id="" style="margin-top: 10px;">版本更新中...</div>'+
+                                                '<div class="weui-slider " id="slider1">'+
+                                                  '<div class="weui-slider__inner" style="height: 20px;">'+
+                                                    '<div style="width:'+
+                                                    percent+
+                                                    '%;" class="weui-slider__track" id="rate"></div>'+
+                                                    '<div style="left: 0%;" class="weui-slider__handler"></div>'+
+                                                  '</div>'+
+                                                '</div>'+
+                                            '</div>'
+                                        $("#gxnr").html(xhtml);  
+                                          //uexWindow.toast('1', '5', '更新进度：' + percent + '%','0'); // percent：下载进度百分比 取值为0~100
+                                      break;
+                                      case 1:
+                                           $("#gxnr").html('');
+                                           //alert('我下载完了');
+                                           uexWidget.installApp("wgt://data/down/up.apk");//安装apk
+                                           //alert('我装么');
+                                      break;
+                                      case 2:
+                                          $("#gxnr").html('');
+                                          //alert("下载失败");
+                                      break;
+                                      }                  
+                               });
+                        }, function() {
+                          //取消操作
+                          $.toast("我取消了!",'text')
+                         //uexWidgetOne.exit(0);//应用进入后台
+                          
+                        });
+                    }
+            },
+            error: function(XMLHttpRequest, textStatus) {
+                
+            }
+        });
+    }else{
+        $.ajax({
+            url: "http://www.sdjyrj.cn/apk/download/ios.json",//访问后台地址,返回版本号 apk下载路径等信息(*********改**********)
+            type: "GET",
+            success: function(res) {
+       //------------------------------------版本对比------------------------------------------------------  
+                /*
+                 * 由于版本号是两个小数点不能直接比较，直接比较会出错（偶尔不对）。
+                 * 所以就把前两位 转为浮点数比较，在相等的情况下比较后面一位。
+                 */
+                    var ver1 = res.version;//请求地址的版本号
+                    var ver2 = Core.version;//当前版本号
+                    var version1pre = parseFloat(ver1);//请求地址的版本号，parseFloat() 函数可解析一个字符串，并返回一个浮点数。
+                    var version2pre = parseFloat(ver2);//当前版本号
+                    var version1next =  ver1.replace(version1pre + ".","");//请求地址的版本号
+                    var version2next =  ver2.replace(version2pre + ".","");//当前版本号，replace() 方法用于在字符串中用一些字符替换另一些字符，或替换一个与正则表达式匹配的子串
+                    
+                     var downloader = uexDownloaderMgr.create();//创建下载对象
+                     
+                    if(version1pre > version2pre){//-----请求地址的版本号  【大于】  当前版本号
+                            geng();
+                    }else if(version1pre < version2pre){ //-----请求地址的版本号  【小于】  当前版本号
+                        return false;
+                    }else{
+                        if(version1next > version2next){ //-----请求地址的版本号  【大于】  当前版本号
+                            geng();
+                        }else{//-----请求地址的版本号  【小于或等于】  当前版本号
+                            return false;
+                        }
+                    }
+       //-----------------------------------下载APK------------------------------------------------------      
+                    function geng () {
+                        
+                        $.confirm(res.changeLog, "版本更新", function() {//res.changeLog为提示信息
+                            window.location.href = "https://itunes.apple.com/cn/app/id1442057464?l=zh&ls=1&mt=8";
+                        }, function() {
+                          //取消操作
+                           $.toast("我取消了!",'text')
+                         //uexWidgetOne.exit(0);//应用进入后台
+                        });
+                        
+                    }
+            },
+            error: function(XMLHttpRequest, textStatus) {
+                
+            }
+        });
+    }
+}
+function edition_new () {//-----------------------------------新版本显示(根据html样式自行改动)
+        // 登录页面每次初始化之前，先检查是否要更新
+        if (uexWidgetOne.platformName == "android") {//只有安卓才用此更新
+            $.ajax({
+                url: "http://www.sdjyrj.cn/apk/download/android.json",//访问后台地址,返回版本号 apk下载路径等信息(*********改**********)
+                type: "GET",
+                success: function(res) {
+                    /*
+                     * 由于版本号是两个小数点不能直接比较，直接比较会出错（偶尔不对）。
+                     * 所以就把前两位 转为浮点数比较，在相等的情况下比较后面一位。
+                     */
+                        var ver1 = res.version;//请求地址的版本号
+                        var ver2 = nowVersion;//当前版本号
+                        var version1pre = parseFloat(ver1);//请求地址的版本号
+                        var version2pre = parseFloat(ver2);//当前版本号
+                        var version1next =  ver1.replace(version1pre + ".","");//请求地址的版本号
+                        var version2next =  ver2.replace(version2pre + ".","");//当前版本号
+                        
+                        var downloader = uexDownloaderMgr.create();//创建下载对象
+                         
+                        if(version1pre > version2pre){//-----请求地址的版本号  【大于】  当前版本号
+                               $("#redBall").text("有新版本 * ");
+                        }else if(version1pre < version2pre){ //-----请求地址的版本号  【小于】  当前版本号
+                            return false;
+                        }else{
+                            if(version1next > version2next){ //-----请求地址的版本号  【大于】  当前版本号
+                               $("#redBall").text("有新版本 * ");
+                            }else{//-----请求地址的版本号  【小于或等于】  当前版本号
+                                return false;
+                            }
+                        }
+                },
+                error: function(XMLHttpRequest, textStatus) {
+                    
+                }
+            });
+        }else{
+        $.ajax({
+            url: "http://www.sdjyrj.cn/apk/download/ios.json",//访问后台地址,返回版本号 apk下载路径等信息(*********改**********)
+            type: "GET",
+            success: function(res) {
+       //------------------------------------版本对比------------------------------------------------------  
+                /*
+                 * 由于版本号是两个小数点不能直接比较，直接比较会出错（偶尔不对）。
+                 * 所以就把前两位 转为浮点数比较，在相等的情况下比较后面一位。
+                 */
+                    var ver1 = res.version;//请求地址的版本号
+                    var ver2 = nowVersion;//当前版本号
+                    var version1pre = parseFloat(ver1);//请求地址的版本号，parseFloat() 函数可解析一个字符串，并返回一个浮点数。
+                    var version2pre = parseFloat(ver2);//当前版本号
+                    var version1next =  ver1.replace(version1pre + ".","");//请求地址的版本号
+                    var version2next =  ver2.replace(version2pre + ".","");//当前版本号，replace() 方法用于在字符串中用一些字符替换另一些字符，或替换一个与正则表达式匹配的子串
+                    
+                     var downloader = uexDownloaderMgr.create();//创建下载对象
+                     
+                    if(version1pre > version2pre){//-----请求地址的版本号  【大于】  当前版本号
+                             $("#redBall").text("有新版本 * ");
+                    }else if(version1pre < version2pre){ //-----请求地址的版本号  【小于】  当前版本号
+                        return false;
+                    }else{
+                        if(version1next > version2next){ //-----请求地址的版本号  【大于】  当前版本号
+                             $("#redBall").text("有新版本 * ");
+                        }else{//-----请求地址的版本号  【小于或等于】  当前版本号
+                            return false;
+                        }
+                    }
+       
+            },
+            error: function(XMLHttpRequest, textStatus) {
+                
+            }
+        });
+    } 
+}
+    </script>
+     <script>appcan.button(".nav-btn", "btn-act", function() {
+                    appcan.window.close(-1);
+                })
+        </script>
+</html>

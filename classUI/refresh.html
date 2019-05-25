@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    
+    <head>
+        <title>下拉刷新及上拉加载</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="./cssWeui/weui.css">
+        <link rel="stylesheet" href="./cssWeui/jquery-weui.css">
+    </head>
+    <body style="height: 100vh;background: #fff;">
+        <div id="header" class="uh bc-text-head ub bc-head">
+            <div class="nav-btn" id="nav-left">
+                <div class="fa fa-angle-left fa-2x"></div>
+            </div>
+            <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">下拉刷新及上拉加载</h1>
+            <div class="nav-btn" id="nav-right">
+            </div>
+        </div>
+
+       <div class="content" style=" width: 100%;height:88%;position: absolute; margin-bottom:45px;padding:0px; overflow: hidden;">
+          <div class="list-main-mian weui-form-preview infinite weui-pull-to-refresh" id="listwrap" style="height:100%; margin-top: 1px;overflow:auto;  z-index: 1">
+                <!--下拉刷新-->
+                <div class="weui-pull-to-refresh__layer" style="padding: 5px;">
+                    <div class="weui-pull-to-refresh__arrow"></div>
+                    <div class="weui-pull-to-refresh__preloader"></div>
+                    <div class="down">下拉刷新</div>
+                    <div class="up">释放刷新</div>
+                    <div class="refresh">正在刷新</div>
+                </div>
+                <div class="weui-form-preview" id="Tolist">
+                   <!--内容展示区域-->
+                </div>
+                <div class="weui-loadmore" style="padding-bottom:30px;height:20px">
+                    <i class="weui-loading"></i>
+                    <span class="weui-loadmore__tips">正在加载</span>
+                </div>
+            </div>
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script type="text/javascript" src="./jsWeui/jquery.min.js" ></script>
+        <script type="text/javascript" src="./jsWeui/jquery-weui.min.js"></script>
+        <script type="text/javascript" charset="utf-8">
+             var pages = 1;//这是页数
+               var sizes = 4;//这是每页数量
+               var loading = false;  //状态标记
+               $(function () {
+                   loadlist();
+               })
+             //=========================下拉刷新
+               $("#listwrap").pullToRefresh().on("pull-to-refresh", function () {
+                   setTimeout(function () {
+                       pages = 1;//设置为第一页
+                       $("#Tolist").html("");//清空界面
+                       loadlist();//加载方法
+                       if (loading) loading = false;
+                       $("#listwrap").pullToRefreshDone(); // 重置下拉刷新
+                   }, 1500);   //模拟延迟
+               });
+               //============================滚动加载
+               $("#listwrap").infinite().on("infinite", function () {
+                   if (loading) return;
+                   loading = true;
+                   pages++; //页数
+                   $('.weui-loadmore').show();
+                   setTimeout(function () {
+                       loadlist();
+                       loading = false;
+                   }, 2500);   //模拟延迟
+               });
+            // =======加载数据loadlist();
+              function loadlist() {
+                   var html = "";
+                   $.ajax({
+                       type: "POST",
+                       url: "/Index/Index",
+                       data: { 'page': pages, 'size': sizes },
+                       dataType: "json",
+                       error: function (request) {
+                           $(".weui-loadmore").hide();         
+                           html += "<div class=\"weui-cells__title\" >已无更多数据</div>";
+                           $("#Tolist").append(html);
+                       },
+                       success: function (data) {
+                           if (data.List.length > 0) {
+                               for (var i = 0; i < data.List.length; i++) {
+                                   html += ' <label class="weui-form-preview__label">' + data.List[i].Name + '</label> ';
+                               }
+                               $("#Tolist").append(html);
+                           }
+                           else {
+                               html += "<div class=\"weui-cells__title\" >已无更多数据</div>";
+                               $("#Tolist").append(html);
+                               loading = true;
+                           }
+                           $(".weui-loadmore").hide();
+                       }
+                   });
+               }
+        </script>    
+        <script>appcan.button(".nav-btn", "btn-act", function() {
+                    appcan.window.close(-1);
+                })
+        </script>
+    </body>
+
+</html>
